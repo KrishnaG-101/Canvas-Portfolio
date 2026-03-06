@@ -194,7 +194,16 @@ export function GitHubSection() {
         </div>
         
         <p className="text-sm text-muted-foreground mt-4 text-center">
-          This is a visualization of contribution activity. Connect your GitHub for real data!
+          Simulated contribution heatmap — because my actual commit history would include 3 AM panic pushes.
+          {" "}
+          <a
+            href="https://github.com/KrishnaG-101"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-accent hover:underline font-medium"
+          >
+            View real profile on GitHub →
+          </a>
         </p>
       </div>
     </section>
