@@ -1,210 +1,353 @@
 "use client"
 
-import { useMemo, useState, useEffect } from "react"
+import { useState, useEffect, useMemo, useCallback, useRef } from "react"
+import { Github, ExternalLink, Users, BookOpen, Loader2 } from "lucide-react"
 
+// ── Types ────────────────────────────────────────────────────────────────────
 type ContributionDay = { date: string; count: number; level: number }
 
-// Seeded random number generator for consistent results
-function seededRandom(seed: number) {
-  const x = Math.sin(seed) * 10000
-  return x - Math.floor(x)
+type ContributionData = {
+  total: Record<string, number>
+  contributions: ContributionDay[]
 }
 
-// Generate mock contribution data for the last 52 weeks with a fixed seed
-function generateContributionData(): ContributionDay[] {
-  const data: ContributionDay[] = []
-  // Use a fixed base date to ensure consistency
-  const baseDate = new Date("2026-03-06")
-  
-  for (let i = 364; i >= 0; i--) {
-    const date = new Date(baseDate)
-    date.setDate(date.getDate() - i)
-    
-    // Simulate realistic contribution patterns
-    const dayOfWeek = date.getDay()
-    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6
-    
-    // Use seeded random based on date for consistent results
-    const seed = date.getFullYear() * 10000 + (date.getMonth() + 1) * 100 + date.getDate()
-    const random = seededRandom(seed)
-    
-    let count: number
-    if (isWeekend) {
-      count = random > 0.7 ? Math.floor(random * 5) : 0
-    } else {
-      if (random > 0.3) {
-        count = Math.floor(random * 12) + 1
-      } else {
-        count = 0
-      }
-    }
-    
-    let level: number
-    if (count === 0) level = 0
-    else if (count <= 3) level = 1
-    else if (count <= 6) level = 2
-    else if (count <= 9) level = 3
-    else level = 4
-    
-    data.push({
-      date: date.toISOString().split("T")[0],
-      count,
-      level,
-    })
-  }
-  
-  return data
+type GitHubUserData = {
+  public_repos: number
+  followers: number
+  following: number
 }
 
-const LEVEL_COLORS = [
-  "bg-muted dark:bg-secondary",
-  "bg-emerald-200 dark:bg-emerald-900/60",
-  "bg-emerald-300 dark:bg-emerald-700/70",
-  "bg-emerald-400 dark:bg-emerald-500/80",
-  "bg-emerald-500 dark:bg-emerald-400",
-]
+// ── Constants ────────────────────────────────────────────────────────────────
+const GITHUB_USERNAME = "KrishnaG-101"
+const CONTRIBUTIONS_API = `https://github-contributions-api.jogruber.de/v4/${GITHUB_USERNAME}`
+const GITHUB_API = `https://api.github.com/users/${GITHUB_USERNAME}`
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
+// GitHub's exact contribution colors
+const COLORS_DARK = ["#161b22", "#0e4429", "#006d32", "#26a641", "#39d353"]
+const COLORS_LIGHT = ["#ebedf0", "#9be9a8", "#40c463", "#30a14e", "#216e39"]
+
+// ── Component ────────────────────────────────────────────────────────────────
 export function GitHubSection() {
-  const contributionData = useMemo(() => generateContributionData(), [])
-  
-  // Group data by weeks
+  const [contributionData, setContributionData] = useState<ContributionDay[]>([])
+  const [totalContributions, setTotalContributions] = useState(0)
+  const [userData, setUserData] = useState<GitHubUserData | null>(null)
+  const [selectedYear, setSelectedYear] = useState<string>("last")
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [tooltip, setTooltip] = useState<{ day: ContributionDay; x: number; y: number } | null>(null)
+  const [isDark, setIsDark] = useState(true)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  // Detect dark mode
+  useEffect(() => {
+    const html = document.documentElement
+    const observer = new MutationObserver(() => {
+      setIsDark(html.classList.contains("dark"))
+    })
+    setIsDark(html.classList.contains("dark"))
+    observer.observe(html, { attributes: true, attributeFilter: ["class"] })
+    return () => observer.disconnect()
+  }, [])
+
+  // Available years
+  const currentYear = new Date().getFullYear()
+  const availableYears = useMemo(() => {
+    const years: { label: string; value: string }[] = [
+      { label: "Last year", value: "last" },
+    ]
+    for (let y = currentYear; y >= 2024; y--) {
+      years.push({ label: String(y), value: String(y) })
+    }
+    return years
+  }, [currentYear])
+
+  // Fetch contribution data
+  const fetchContributions = useCallback(async (year: string) => {
+    setIsLoading(true)
+    setError(null)
+    try {
+      const res = await fetch(`${CONTRIBUTIONS_API}?y=${year}`)
+      if (!res.ok) throw new Error("Failed to fetch")
+      const data: ContributionData = await res.json()
+      setContributionData(data.contributions)
+      const totalKey = year === "last" ? "lastYear" : year
+      setTotalContributions(data.total[totalKey] ?? 0)
+    } catch {
+      setError("Couldn't load contributions")
+      setContributionData([])
+      setTotalContributions(0)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
+
+  // Fetch GitHub user profile
+  useEffect(() => {
+    fetch(GITHUB_API).then(r => r.ok ? r.json() : null).then(d => d && setUserData(d)).catch(() => {})
+  }, [])
+
+  useEffect(() => { fetchContributions(selectedYear) }, [selectedYear, fetchContributions])
+
+  // Group data into weeks (columns)
   const weeks = useMemo(() => {
-    const result: { date: string; count: number; level: number }[][] = []
-    let currentWeek: { date: string; count: number; level: number }[] = []
-    
-    contributionData.forEach((day, index) => {
-      const dayOfWeek = new Date(day.date).getDay()
-      
-      if (index === 0) {
-        // Fill in empty days at the start
-        for (let i = 0; i < dayOfWeek; i++) {
-          currentWeek.push({ date: "", count: -1, level: -1 })
-        }
+    if (!contributionData.length) return []
+    const result: (ContributionDay | null)[][] = []
+    let currentWeek: (ContributionDay | null)[] = []
+
+    contributionData.forEach((day, i) => {
+      const dow = new Date(day.date).getDay()
+      if (i === 0) {
+        for (let j = 0; j < dow; j++) currentWeek.push(null)
       }
-      
       currentWeek.push(day)
-      
-      if (dayOfWeek === 6 || index === contributionData.length - 1) {
+      if (dow === 6 || i === contributionData.length - 1) {
+        // Pad last week to have 7 days
+        while (currentWeek.length < 7) currentWeek.push(null)
         result.push(currentWeek)
         currentWeek = []
       }
     })
-    
     return result
   }, [contributionData])
 
-  const totalContributions = useMemo(
-    () => contributionData.reduce((sum, day) => sum + day.count, 0),
-    [contributionData]
-  )
-
-  // Get month labels
+  // Month labels positioned at the correct week column
   const monthLabels = useMemo(() => {
-    const labels: { month: string; position: number }[] = []
+    if (!weeks.length) return []
+    const labels: { month: string; col: number }[] = []
     let lastMonth = -1
-    
-    weeks.forEach((week, index) => {
-      const firstValidDay = week.find(d => d.date)
-      if (firstValidDay) {
-        const month = new Date(firstValidDay.date).getMonth()
-        if (month !== lastMonth) {
-          labels.push({ month: MONTHS[month], position: index })
-          lastMonth = month
+
+    weeks.forEach((week, colIdx) => {
+      // Find the first real day in this week
+      const firstDay = week.find(d => d !== null)
+      if (firstDay) {
+        const m = new Date(firstDay.date).getMonth()
+        if (m !== lastMonth) {
+          // Only add if there's room (at least 3 weeks gap or first label)
+          if (labels.length === 0 || colIdx - labels[labels.length - 1].col >= 3) {
+            labels.push({ month: MONTHS[m], col: colIdx })
+          }
+          lastMonth = m
         }
       }
     })
-    
     return labels
   }, [weeks])
 
+  // SVG dimensions — matches GitHub proportions
+  const CELL = 11
+  const GAP = 3
+  const COLS = weeks.length
+  const LABEL_W = 30 // space for Mon/Wed/Fri
+  const HEADER_H = 16 // space for month labels
+  const svgWidth = LABEL_W + COLS * (CELL + GAP) - GAP + 20 // +20 right padding for last month label
+  const svgHeight = HEADER_H + 7 * (CELL + GAP) - GAP
+
+  const colors = isDark ? COLORS_DARK : COLORS_LIGHT
+
+  const handleCellHover = (e: React.MouseEvent<SVGRectElement>, day: ContributionDay) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const containerRect = containerRef.current?.getBoundingClientRect()
+    if (!containerRect) return
+    setTooltip({
+      day,
+      x: rect.left + rect.width / 2 - containerRect.left,
+      y: rect.top - containerRect.top,
+    })
+  }
+
+  const formatDate = (dateStr: string) => {
+    const d = new Date(dateStr)
+    return d.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })
+  }
+
   return (
-    <section className="py-20 px-6">
+    <section className="py-16 sm:py-20 px-4 sm:px-6 bg-secondary/30" id="github">
       <div className="max-w-5xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-3 mb-8">
+        {/* Header */}
+        <div className="flex items-center gap-3 mb-6">
           <h2 className="text-2xl font-semibold">GitHub Contributions</h2>
-          <span className="text-sm text-muted-foreground">
-            {totalContributions.toLocaleString()} contributions in the last year
-          </span>
         </div>
-        
-        <div className="bg-card rounded-lg border border-border p-6 overflow-x-auto">
-          {/* Month labels */}
-          <div className="flex mb-2 ml-8">
-            {monthLabels.map((label, i) => (
-              <div
-                key={i}
-                className="text-xs text-muted-foreground"
-                style={{ 
-                  position: "relative", 
-                  left: `${label.position * 13}px`,
-                  marginRight: i < monthLabels.length - 1 
-                    ? `${(monthLabels[i + 1]?.position - label.position - 3) * 13}px` 
-                    : "0"
-                }}
-              >
-                {label.month}
+
+        {/* Contribution card */}
+        <div ref={containerRef} className="bg-card rounded-lg border border-border relative">
+          {/* Top bar with year tabs */}
+          <div className="flex flex-wrap items-center justify-between gap-3 px-4 sm:px-6 py-3 border-b border-border">
+            <span className="text-sm text-muted-foreground">
+              <strong className="text-foreground">{totalContributions.toLocaleString()}</strong> contributions{" "}
+              {selectedYear === "last" ? "in the last year" : `in ${selectedYear}`}
+            </span>
+            <div className="flex gap-1">
+              {availableYears.map((y) => (
+                <button
+                  key={y.value}
+                  onClick={() => setSelectedYear(y.value)}
+                  className={`px-2.5 py-1 text-xs rounded-md transition-colors ${
+                    selectedYear === y.value
+                      ? "bg-accent text-accent-foreground font-medium"
+                      : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+                  }`}
+                >
+                  {y.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Graph area */}
+          <div className="px-4 sm:px-6 py-4">
+            {isLoading ? (
+              <div className="flex items-center justify-center h-[130px] gap-2 text-muted-foreground">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span className="text-sm">Loading...</span>
               </div>
-            ))}
-          </div>
-          
-          <div className="flex gap-1">
-            {/* Day labels */}
-            <div className="flex flex-col gap-1 mr-2 text-xs text-muted-foreground">
-              {DAYS.map((day, i) => (
-                <div key={day} className="h-[11px] flex items-center">
-                  {i % 2 === 1 ? day.slice(0, 3) : ""}
+            ) : error ? (
+              <div className="flex items-center justify-center h-[130px] text-sm text-muted-foreground">
+                {error}
+              </div>
+            ) : (
+              <>
+                {/* Scrollable on mobile, fits on desktop */}
+                <div className="auto-hide-scrollbar">
+                  <svg
+                    width={svgWidth}
+                    height={svgHeight}
+                    viewBox={`0 0 ${svgWidth} ${svgHeight}`}
+                    className="sm:w-full sm:h-auto"
+                    style={{ minWidth: `${svgWidth}px` }}
+                  >
+                    {/* Month labels */}
+                    {monthLabels.map((label, i) => (
+                      <text
+                        key={i}
+                        x={LABEL_W + label.col * (CELL + GAP)}
+                        y={10}
+                        fill="currentColor"
+                        className="text-muted-foreground"
+                        style={{ fontSize: "9px" }}
+                      >
+                        {label.month}
+                      </text>
+                    ))}
+
+                    {/* Day labels — Mon, Wed, Fri (like GitHub) */}
+                    {[1, 3, 5].map((dayIdx) => (
+                      <text
+                        key={dayIdx}
+                        x={0}
+                        y={HEADER_H + dayIdx * (CELL + GAP) + CELL - 2}
+                        fill="currentColor"
+                        className="text-muted-foreground"
+                        style={{ fontSize: "9px" }}
+                      >
+                        {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][dayIdx]}
+                      </text>
+                    ))}
+
+                    {/* Contribution cells */}
+                    {weeks.map((week, colIdx) =>
+                      week.map((day, rowIdx) => {
+                        if (!day) return null
+                        const x = LABEL_W + colIdx * (CELL + GAP)
+                        const y = HEADER_H + rowIdx * (CELL + GAP)
+                        return (
+                          <rect
+                            key={`${colIdx}-${rowIdx}`}
+                            x={x}
+                            y={y}
+                            width={CELL}
+                            height={CELL}
+                            rx={2}
+                            ry={2}
+                            fill={colors[day.level]}
+                            onMouseEnter={(e) => handleCellHover(e, day)}
+                            onMouseLeave={() => setTooltip(null)}
+                            style={{ cursor: "pointer", outline: "none" }}
+                          />
+                        )
+                      })
+                    )}
+                  </svg>
                 </div>
-              ))}
-            </div>
-            
-            {/* Contribution grid */}
-            <div className="flex gap-[3px]">
-              {weeks.map((week, weekIndex) => (
-                <div key={weekIndex} className="flex flex-col gap-[3px]">
-                  {week.map((day, dayIndex) => (
-                    <div
-                      key={`${weekIndex}-${dayIndex}`}
-                      className={`w-[11px] h-[11px] rounded-sm transition-colors ${
-                        day.level === -1 
-                          ? "bg-transparent" 
-                          : LEVEL_COLORS[day.level]
-                      }`}
-                      title={day.date ? `${day.count} contributions on ${day.date}` : ""}
-                    />
-                  ))}
+
+                {/* Legend */}
+                <div className="flex items-center justify-between mt-3">
+                  <a
+                    href={`https://github.com/${GITHUB_USERNAME}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-muted-foreground hover:text-accent transition-colors"
+                  >
+                    Learn how we count contributions
+                  </a>
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <span>Less</span>
+                    {[0, 1, 2, 3, 4].map((level) => (
+                      <div
+                        key={level}
+                        className="rounded-sm"
+                        style={{
+                          width: "10px",
+                          height: "10px",
+                          backgroundColor: colors[level],
+                        }}
+                      />
+                    ))}
+                    <span>More</span>
+                  </div>
                 </div>
-              ))}
-            </div>
+              </>
+            )}
           </div>
-          
-          {/* Legend */}
-          <div className="flex items-center justify-end gap-2 mt-4 text-xs text-muted-foreground">
-            <span>Less</span>
-            {[0, 1, 2, 3, 4].map((level) => (
+
+          {/* Tooltip */}
+          {tooltip && (
+            <div
+              className="absolute z-50 pointer-events-none px-3 py-1.5 rounded-md text-xs font-medium shadow-lg whitespace-nowrap"
+              style={{
+                left: tooltip.x,
+                top: tooltip.y - 32,
+                transform: "translateX(-50%)",
+                backgroundColor: isDark ? "#f0f0f0" : "#24292f",
+                color: isDark ? "#24292f" : "#f0f0f0",
+              }}
+            >
+              <strong>{tooltip.day.count === 0 ? "No" : tooltip.day.count} contribution{tooltip.day.count !== 1 ? "s" : ""}</strong> on {formatDate(tooltip.day.date)}
               <div
-                key={level}
-                className={`w-[11px] h-[11px] rounded-sm ${LEVEL_COLORS[level]}`}
+                className="absolute left-1/2 -bottom-1 w-2 h-2 rotate-45"
+                style={{
+                  transform: "translateX(-50%) rotate(45deg)",
+                  backgroundColor: isDark ? "#f0f0f0" : "#24292f",
+                }}
               />
-            ))}
-            <span>More</span>
-          </div>
+            </div>
+          )}
         </div>
-        
-        <p className="text-sm text-muted-foreground mt-4 text-center">
-          Simulated contribution heatmap — because my actual commit history would include 3 AM panic pushes.
-          {" "}
-          <a
-            href="https://github.com/KrishnaG-101"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-accent hover:underline font-medium"
-          >
-            View real profile on GitHub →
-          </a>
-        </p>
+
+        {/* Stats row */}
+        {userData && (
+          <div className="flex flex-wrap items-center gap-5 mt-5 text-sm text-muted-foreground">
+            <div className="flex items-center gap-1.5">
+              <BookOpen className="w-4 h-4" />
+              <span>{userData.public_repos} repos</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <Users className="w-4 h-4" />
+              <span>{userData.followers} followers · {userData.following} following</span>
+            </div>
+            <a
+              href={`https://github.com/${GITHUB_USERNAME}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ml-auto inline-flex items-center gap-1.5 text-accent hover:underline font-medium"
+            >
+              <Github className="w-4 h-4" />
+              @{GITHUB_USERNAME}
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          </div>
+        )}
       </div>
     </section>
   )

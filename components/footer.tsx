@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Mail, Phone, MapPin, Globe, BrainCircuit, Github, Linkedin } from "lucide-react"
+import { BrainCircuit, Github, Linkedin, Mail } from "lucide-react"
 
 export function Footer() {
   const [isFlipped, setIsFlipped] = useState(false)
@@ -13,12 +13,12 @@ export function Footer() {
         <p className="text-sm text-muted-foreground text-center mb-8 sm:mb-12 italic">
           I promise I respond faster than my models train. Usually.
         </p>
-        
-        {/* Business Card — Full Width */}
+
+        {/* Business Card */}
         <div
-          className="relative w-full h-[260px] sm:h-[280px] cursor-pointer"
+          className="relative w-full aspect-[1.8/1] max-h-[300px] cursor-pointer mx-auto"
           onClick={() => setIsFlipped(!isFlipped)}
-          style={{ perspective: "1000px" }}
+          style={{ perspective: "1200px" }}
         >
           <div
             className="relative w-full h-full transition-transform duration-700"
@@ -27,125 +27,122 @@ export function Footer() {
               transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)",
             }}
           >
-            {/* Front of card */}
+            {/* ─── Front ─── */}
             <div
-              className="absolute inset-0 bg-card border-2 border-border rounded-xl p-6 sm:p-8 lg:p-10 shadow-lg"
+              className="absolute inset-0 bg-card border-2 border-border rounded-xl shadow-lg overflow-hidden"
               style={{ backfaceVisibility: "hidden" }}
             >
-              <div className="h-full flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center gap-3 mb-1">
-                    <BrainCircuit className="w-6 h-6 sm:w-7 sm:h-7 text-accent" />
-                    <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight">Krishna Gelra</h3>
-                  </div>
-                  <p className="text-accent font-medium mt-1 text-sm sm:text-base ml-9 sm:ml-10">
-                    Data Scientist & AI/ML Engineer
-                  </p>
-                  <p className="text-xs text-muted-foreground/50 ml-9 sm:ml-10 mt-0.5 italic">
-                    a.k.a. Professional Hyperparameter Whisperer
-                  </p>
-                </div>
-                
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-                  <div className="flex items-center gap-3 text-xs sm:text-sm text-muted-foreground">
-                    <Mail className="w-4 h-4 flex-shrink-0" />
-                    <span className="truncate">krishnagelra@gmail.com</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-xs sm:text-sm text-muted-foreground">
-                    <MapPin className="w-4 h-4 flex-shrink-0" />
-                    <span>India 🇮🇳</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-xs sm:text-sm text-muted-foreground">
-                    <Github className="w-4 h-4 flex-shrink-0" />
-                    <span className="truncate">github.com/KrishnaG-101</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-xs sm:text-sm text-muted-foreground">
-                    <Globe className="w-4 h-4 flex-shrink-0" />
-                    <span className="truncate">Open for opportunities</span>
+              <div className="h-full flex flex-col justify-between p-5 sm:p-8 md:p-10">
+                {/* Top row */}
+                <div className="flex items-start justify-between gap-4">
+                  <a
+                    href="mailto:krishnagelra@gmail.com"
+                    onClick={(e) => e.stopPropagation()}
+                    className="text-[11px] sm:text-xs md:text-sm text-muted-foreground hover:text-accent transition-colors tracking-wide break-all"
+                  >
+                    krishnagelra@gmail.com
+                  </a>
+                  <div className="text-right flex-shrink-0">
+                    <p className="text-[9px] sm:text-[10px] text-muted-foreground tracking-[0.15em] uppercase mt-0.5">
+                      Data Science & Engineering
+                    </p>
                   </div>
                 </div>
 
-                <p className="text-xs text-muted-foreground/60 text-center">
-                  Click to flip — no gradient descent required
-                </p>
+                {/* Center — name + title */}
+                <div className="text-center">
+                  <h3 className="text-xl sm:text-3xl md:text-4xl font-bold tracking-wider">
+                    <span className="font-normal">Krishna Gelra</span>
+                  </h3>
+                  <p className="text-xs sm:text-sm tracking-[0.2em] uppercase text-muted-foreground mt-1 sm:mt-2">
+                    Data Scientist & AI/ML Engineer
+                  </p>
+                </div>
+
+                {/* Bottom row */}
+                <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 sm:gap-x-6 text-[10px] sm:text-xs text-muted-foreground tracking-wide">
+                  <span>Indore, India</span>
+                  <span className="hidden sm:inline text-border">|</span>
+                  <span className="break-all">github.com/KrishnaG-101</span>
+                  <span className="hidden sm:inline text-border">|</span>
+                  <span>linkedin.com/in/krishna-gelra</span>
+                </div>
               </div>
             </div>
 
-            {/* Back of card */}
+            {/* ─── Back ─── */}
             <div
-              className="absolute inset-0 bg-foreground text-background border-2 border-border rounded-xl p-6 sm:p-8 lg:p-10 shadow-lg"
+              className="absolute inset-0 bg-card border-2 border-border rounded-xl shadow-lg overflow-hidden"
               style={{
                 backfaceVisibility: "hidden",
                 transform: "rotateY(180deg)",
               }}
             >
-              <div className="h-full flex flex-col justify-between">
+              <div className="h-full flex flex-col justify-between p-5 sm:p-8 md:p-10">
+                {/* Top — icon */}
                 <div className="text-center">
-                  <div className="w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-4 rounded-full border-2 border-background/20 flex items-center justify-center">
-                    <BrainCircuit className="w-7 h-7 sm:w-8 sm:h-8 opacity-80" />
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 mx-auto rounded-full border border-border flex items-center justify-center">
+                    <BrainCircuit className="w-6 h-6 sm:w-7 sm:h-7 text-accent" />
                   </div>
-                  <p className="text-sm sm:text-base opacity-80 leading-relaxed max-w-md mx-auto">
-                    Turning data into decisions, coffee into code, and bugs into {"'"}features.{"'"}
+                </div>
+
+                {/* Center — tagline */}
+                <div className="text-center max-w-sm mx-auto px-2">
+                  <p className="text-xs sm:text-sm leading-relaxed text-muted-foreground">
+                    Turning data into decisions, coffee into code,
                     <br />
+                    and bugs into {"'"}features.{"'"}
+                  </p>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground/60 mt-2 italic">
                     Open for collaborations in AI/ML, Data Science & GenAI.
-                    <br />
-                    <span className="text-xs opacity-60 italic">
-                      Warning: May randomly talk about transformers at social gatherings.
-                    </span>
                   </p>
                 </div>
 
-                <div className="flex flex-wrap justify-center gap-3 sm:gap-6">
+                {/* Bottom — social links */}
+                <div className="flex items-center justify-center gap-4 sm:gap-8">
                   <a
                     href="https://github.com/KrishnaG-101"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-xs sm:text-sm opacity-70 hover:opacity-100 transition-opacity"
+                    className="flex items-center gap-1.5 text-[11px] sm:text-xs text-muted-foreground hover:text-accent transition-colors"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <Github className="w-4 h-4" />
+                    <Github className="w-3.5 h-3.5" />
                     GitHub
                   </a>
                   <a
                     href="https://linkedin.com/in/krishna-gelra"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-xs sm:text-sm opacity-70 hover:opacity-100 transition-opacity"
+                    className="flex items-center gap-1.5 text-[11px] sm:text-xs text-muted-foreground hover:text-accent transition-colors"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <Linkedin className="w-4 h-4" />
+                    <Linkedin className="w-3.5 h-3.5" />
                     LinkedIn
                   </a>
                   <a
-                    href="https://kaggle.com/krishnagelra"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-xs sm:text-sm opacity-70 hover:opacity-100 transition-opacity"
+                    href="mailto:krishnagelra@gmail.com"
+                    className="flex items-center gap-1.5 text-[11px] sm:text-xs text-muted-foreground hover:text-accent transition-colors"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <Globe className="w-4 h-4" />
-                    Kaggle
+                    <Mail className="w-3.5 h-3.5" />
+                    Email
                   </a>
                 </div>
-
-                <p className="text-xs opacity-40 text-center">
-                  Click to flip back — backpropagation not needed
-                </p>
               </div>
             </div>
           </div>
         </div>
 
+        {/* Flip hint */}
+        <p className="text-[10px] text-muted-foreground/40 text-center mt-3">
+          click the card to flip
+        </p>
+
         {/* Copyright */}
-        <div className="mt-12 sm:mt-16 pt-6 sm:pt-8 border-t border-border text-center">
-          <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Krishna Gelra. Crafted with care, caffeine & questionable sleep schedules.
-          </p>
-          <p className="text-xs text-muted-foreground/60 mt-2">
-            Built with Next.js, Tailwind CSS, and a well-tuned loss function. No datasets were harmed in the making of this website.
-          </p>
-          <p className="text-xs text-muted-foreground/40 mt-1 italic">
-            P.S. If this page loads slowly, blame the attention mechanism — it{"'"}s attending to everything.
+        <div className="mt-10 sm:mt-14 pt-6 border-t border-border text-center">
+          <p className="text-xs sm:text-sm text-muted-foreground">
+            © {new Date().getFullYear()} Krishna Gelra. Built with Next.js & Tailwind CSS.
           </p>
         </div>
       </div>

@@ -20,7 +20,7 @@ const TECH_CATEGORIES: TechCategory[] = [
     name: "AI / Machine Learning",
     color: "text-violet-600 dark:text-violet-400",
     bgColor: "bg-violet-500/10 border-violet-500/20",
-    technologies: ["TensorFlow", "PyTorch", "Scikit-learn", "Hugging Face", "OpenCV", "XGBoost", "SHAP", "Keras"],
+    technologies: ["TensorFlow", "PyTorch", "Scikit-learn", "Hugging Face", "OpenCV", "XGBoost", "Keras"],
   },
   {
     name: "Generative AI",
@@ -59,18 +59,17 @@ export function TechStackSection() {
           {TECH_CATEGORIES.map((category) => (
             <div
               key={category.name}
-              className={`bg-card border rounded-lg p-5 sm:p-6 transition-all duration-300 hover:shadow-lg cursor-default ${
-                activeCategory === category.name 
-                  ? "border-accent shadow-lg scale-[1.02]" 
+              className={`bg-card border rounded-lg p-5 sm:p-6 transition-all duration-300 hover:shadow-lg cursor-default ${activeCategory === category.name
+                  ? "border-accent shadow-lg scale-[1.02]"
                   : "border-border hover:border-accent/50"
-              }`}
+                }`}
               onMouseEnter={() => setActiveCategory(category.name)}
               onMouseLeave={() => setActiveCategory(null)}
             >
               <h3 className={`text-sm sm:text-base font-semibold mb-4 ${category.color}`}>
                 {category.name}
               </h3>
-              
+
               <div className="flex flex-wrap gap-2">
                 {category.technologies.map((tech) => (
                   <span

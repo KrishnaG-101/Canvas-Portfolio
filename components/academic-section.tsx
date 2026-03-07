@@ -1,6 +1,6 @@
 "use client"
 
-import { GraduationCap, BookOpen, Award } from "lucide-react"
+import { GraduationCap, Award } from "lucide-react"
 
 interface Education {
   id: number
@@ -10,17 +10,16 @@ interface Education {
   period: string
   grade?: string
   coursework: string[]
-  icon: "graduation" | "book" | "award"
+  icon: "graduation" | "award"
 }
 
 const EDUCATION: Education[] = [
   {
     id: 1,
     degree: "B.Tech in Computer Science & Engineering",
-    institution: "Your University",
-    location: "City, India",
-    period: "2021 — 2025",
-    grade: "CGPA: 8.5 / 10",
+    institution: "Sri Aurobindo Institute of Technology",
+    location: "Indore, India",
+    period: "2022 — 2026",
     coursework: [
       "Machine Learning",
       "Deep Learning",
@@ -33,32 +32,16 @@ const EDUCATION: Education[] = [
     ],
     icon: "graduation",
   },
-  {
-    id: 2,
-    degree: "Higher Secondary (XII) — Science",
-    institution: "Your School",
-    location: "City, India",
-    period: "2019 — 2021",
-    grade: "Score: 92%",
-    coursework: [
-      "Mathematics",
-      "Physics",
-      "Chemistry",
-      "Computer Science",
-    ],
-    icon: "book",
-  },
 ]
 
 const CERTIFICATIONS = [
-  "Deep Learning Specialization — Coursera (Andrew Ng)",
-  "Google Data Analytics Professional Certificate",
-  "AWS Cloud Practitioner",
+  "Microsoft Elevate — Copilot Internship Program",
+  "Microsoft Elevate — Azure Internship Program",
+  "Build with AI Indore — Workshop Series (GDG Indore)",
 ]
 
 const IconMap = {
   graduation: GraduationCap,
-  book: BookOpen,
   award: Award,
 }
 
@@ -73,8 +56,9 @@ export function AcademicSection() {
           </span>
         </div>
 
-        {/* Education Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-8 sm:mb-10">
+        {/* Education + Certifications Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+          {/* Education Cards */}
           {EDUCATION.map((edu) => {
             const Icon = IconMap[edu.icon]
             return (
@@ -114,22 +98,28 @@ export function AcademicSection() {
               </div>
             )
           })}
-        </div>
 
-        {/* Certifications */}
-        <div className="bg-card border border-border rounded-lg p-5 sm:p-6">
-          <div className="flex items-center gap-2.5 mb-4">
-            <Award className="w-5 h-5 text-accent" />
-            <h3 className="text-sm sm:text-base font-semibold">Certifications</h3>
+          {/* Certifications — same card style as education for consistency */}
+          <div className="bg-card border border-border rounded-lg p-5 sm:p-6 transition-all duration-200 hover:border-accent/50 hover:shadow-md">
+            <div className="flex items-start gap-3 sm:gap-4 mb-4">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
+                <Award className="w-5 h-5 sm:w-6 sm:h-6 text-accent" />
+              </div>
+              <div className="min-w-0">
+                <h3 className="text-sm sm:text-base font-semibold leading-tight">Certifications & Programs</h3>
+                <p className="text-muted-foreground text-xs sm:text-sm mt-1">Industry recognized credentials</p>
+              </div>
+            </div>
+
+            <ul className="space-y-2.5">
+              {CERTIFICATIONS.map((cert, index) => (
+                <li key={index} className="flex items-start gap-2.5 text-sm text-muted-foreground">
+                  <span className="w-1.5 h-1.5 rounded-full bg-accent/60 mt-1.5 flex-shrink-0" />
+                  <span>{cert}</span>
+                </li>
+              ))}
+            </ul>
           </div>
-          <ul className="space-y-2.5">
-            {CERTIFICATIONS.map((cert, index) => (
-              <li key={index} className="flex items-start gap-2.5 text-sm text-muted-foreground">
-                <span className="w-1.5 h-1.5 rounded-full bg-accent/60 mt-1.5 flex-shrink-0" />
-                <span>{cert}</span>
-              </li>
-            ))}
-          </ul>
         </div>
       </div>
     </section>
