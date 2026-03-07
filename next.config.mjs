@@ -7,6 +7,9 @@ const nextConfig = {
   output: 'export',
   basePath: isGitHubPages ? repoName : '',
   assetPrefix: isGitHubPages ? repoName : '',
+  env: {
+    NEXT_PUBLIC_BASE_PATH: isGitHubPages ? repoName : '',
+  },
   typescript: {
     ignoreBuildErrors: true,
   },

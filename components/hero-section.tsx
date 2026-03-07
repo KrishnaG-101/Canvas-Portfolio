@@ -1,8 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import Image from "next/image"
 import { Github, Linkedin, Mail } from "lucide-react"
+
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || ''
 
 export function HeroSection() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
@@ -52,12 +53,11 @@ export function HeroSection() {
                     : "perspective(800px) rotateY(0deg) rotateX(0deg) scale(1)",
                 }}
               >
-                <Image
-                  src="/images/profile.jpg"
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={`${basePath}/images/profile.jpg`}
                   alt="Krishna Gelra"
-                  fill
-                  className="object-cover"
-                  priority
+                  className="absolute inset-0 w-full h-full object-cover"
                 />
               </div>
               {isHovering && (
