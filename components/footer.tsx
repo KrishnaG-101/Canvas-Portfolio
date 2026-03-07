@@ -36,11 +36,11 @@ export function Footer() {
                 {/* Top row */}
                 <div className="flex items-start justify-between gap-4">
                   <a
-                    href="mailto:krishnagelra@gmail.com"
+                    href="mailto:krishnagelra18@gmail.com"
                     onClick={(e) => e.stopPropagation()}
                     className="text-[11px] sm:text-xs md:text-sm text-muted-foreground hover:text-accent transition-colors tracking-wide break-all"
                   >
-                    krishnagelra@gmail.com
+                    krishnagelra18@gmail.com
                   </a>
                   <div className="text-right flex-shrink-0">
                     <p className="text-[9px] sm:text-[10px] text-muted-foreground tracking-[0.15em] uppercase mt-0.5">
@@ -121,7 +121,7 @@ export function Footer() {
                     LinkedIn
                   </a>
                   <a
-                    href="mailto:krishnagelra@gmail.com"
+                    href="mailto:krishnagelra18@gmail.com"
                     className="flex items-center gap-1.5 text-[11px] sm:text-xs text-muted-foreground hover:text-accent transition-colors"
                     onClick={(e) => e.stopPropagation()}
                   >

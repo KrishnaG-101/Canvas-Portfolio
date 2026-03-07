@@ -15,10 +15,22 @@ interface Experience {
 const EXPERIENCES: Experience[] = [
   {
     id: 1,
+    role: "Data Scientist",
+    company: "Edunet Foundation | Shell",
+    location: "Remote",
+    period: "Apr 2025 — June 2025",
+    type: "internship",
+    highlights: [
+      "Worked with Python programming language for Data Science, Deep Learning models, and AI related tasks, created different models and deployed them like CNN models, etc.",
+      "Collaborated with teams to deliver cutting-edge AI experiences to students",
+    ],
+  },
+  {
+    id: 2,
     role: "Microsoft Elevate — Copilot Intern",
     company: "Microsoft",
     location: "Remote",
-    period: "Jan 2026 — Present",
+    period: "Dec 2025 — Jan 2026",
     type: "internship",
     highlights: [
       "Building intelligent copilot experiences using Azure AI services and Microsoft 365 Copilot platform",
@@ -27,11 +39,11 @@ const EXPERIENCES: Experience[] = [
     ],
   },
   {
-    id: 2,
+    id: 3,
     role: "Microsoft Elevate — Azure Intern",
     company: "Microsoft",
     location: "Remote",
-    period: "Jan 2026 — Present",
+    period: "Dec 2025 — Jan 2026",
     type: "internship",
     highlights: [
       "Deploying machine learning models on Azure cloud infrastructure for production workloads",
@@ -40,28 +52,16 @@ const EXPERIENCES: Experience[] = [
     ],
   },
   {
-    id: 3,
-    role: "Community Member & Event Attendee",
-    company: "GDG Indore / Machine Learning Indore",
-    location: "Indore, India",
-    period: "2025 — Present",
-    type: "community",
-    highlights: [
-      "Active participant in Build with AI Indore workshop series focused on hands-on ML and GenAI",
-      "Engaged with the GDG and Machine Learning Indore community for knowledge sharing",
-      "Contributing to open-source projects and community-driven development initiatives",
-    ],
-  },
-  {
     id: 4,
-    role: "Student Developer",
-    company: "Ambixous / Student Nexus Hyderabad",
-    location: "India",
-    period: "2024 — Present",
+    role: "Google Student Ambassador",
+    company: "Google Gemini",
+    location: "Remote",
+    period: "Aug 2025 — Present",
     type: "community",
     highlights: [
-      "Active member of student tech communities focused on AI/ML, web development, and innovation",
-      "Participating in hackathons, coding competitions, and collaborative project building",
+      "Promoting Google Gemini and AI technologies within the student community",
+      "Organizing and leading workshops, sessions and tech events to foster AI literacy",
+      "Collaborating with teams to deliver cutting-edge AI experiences to students",
     ],
   },
 ]

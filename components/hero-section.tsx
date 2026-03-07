@@ -86,7 +86,7 @@ export function HeroSection() {
                 <Github className="w-[18px] h-[18px]" />
               </a>
               <a
-                href="mailto:krishnagelra@gmail.com"
+                href="mailto:krishnagelra18@gmail.com"
                 className="p-2.5 rounded-lg bg-secondary/80 hover:bg-accent hover:text-accent-foreground transition-all duration-200 hover:scale-110"
                 aria-label="Email"
               >

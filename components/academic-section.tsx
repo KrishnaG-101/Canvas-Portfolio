@@ -35,9 +35,10 @@ const EDUCATION: Education[] = [
 ]
 
 const CERTIFICATIONS = [
-  "Microsoft Elevate — Copilot Internship Program",
-  "Microsoft Elevate — Azure Internship Program",
-  "Build with AI Indore — Workshop Series (GDG Indore)",
+  "Microsoft Certified: Azure AI Engineer Associate",
+  "Microsoft Certified: Data Fundamentals, AI Fundamentals and Azure Fundamentals",
+  "Udatcity: Foundations of GenAI",
+  "Google Cloud Computing Foundations",
 ]
 
 const IconMap = {
