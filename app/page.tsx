@@ -7,19 +7,44 @@ import { AcademicSection } from "@/components/academic-section"
 import { GitHubSection } from "@/components/github-section"
 import { LinkedInSection } from "@/components/linkedin-section"
 import { Footer } from "@/components/footer"
+import { AnimateOnScroll } from "@/components/animate-on-scroll"
+import { BackToTop } from "@/components/back-to-top"
 
 export default function Home() {
   return (
     <main className="min-h-screen">
       <Header />
       <HeroSection />
-      <ExperienceSection />
-      <ProjectsSection />
-      <TechStackSection />
-      <AcademicSection />
-      <GitHubSection />
-      <LinkedInSection />
-      <Footer />
+
+      <AnimateOnScroll>
+        <ExperienceSection />
+      </AnimateOnScroll>
+
+      <AnimateOnScroll>
+        <ProjectsSection />
+      </AnimateOnScroll>
+
+      <AnimateOnScroll>
+        <TechStackSection />
+      </AnimateOnScroll>
+
+      <AnimateOnScroll>
+        <AcademicSection />
+      </AnimateOnScroll>
+
+      <AnimateOnScroll>
+        <GitHubSection />
+      </AnimateOnScroll>
+
+      <AnimateOnScroll>
+        <LinkedInSection />
+      </AnimateOnScroll>
+
+      <AnimateOnScroll>
+        <Footer />
+      </AnimateOnScroll>
+
+      <BackToTop />
     </main>
   )
 }

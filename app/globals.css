@@ -160,3 +160,88 @@
 .auto-hide-scrollbar:active::-webkit-scrollbar-thumb {
   background: hsl(var(--muted-foreground) / 0.3);
 }
+
+/* ═══ Premium Visual Effects ═══ */
+
+/* Gradient text — uses accent as fallback color so text is always visible */
+.gradient-text {
+  color: var(--accent);
+  background: linear-gradient(135deg, var(--accent) 0%, oklch(0.55 0.20 240) 50%, var(--accent) 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-shift 6s ease-in-out infinite;
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Shimmer effect on hover — visible light sweep */
+.shimmer-hover {
+  position: relative;
+  overflow: hidden;
+}
+.shimmer-hover::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.06) 40%,
+    rgba(255, 255, 255, 0.12) 50%,
+    rgba(255, 255, 255, 0.06) 60%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+.shimmer-hover:hover::after {
+  animation: shimmer 0.8s ease-in-out;
+}
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 200%; }
+}
+
+/* Gentle float animation */
+@keyframes gentle-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+.animate-float {
+  animation: gentle-float 4s ease-in-out infinite;
+}
+
+/* Typing cursor blink */
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+.typing-cursor::after {
+  content: '|';
+  animation: blink 0.8s step-end infinite;
+  color: var(--accent);
+  font-weight: 300;
+  margin-left: 2px;
+}
+
+/* Section divider — subtle gradient line */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border) 30%, var(--accent) 50%, var(--border) 70%, transparent);
+  opacity: 0.4;
+}
+
+/* Glow pulse for accent elements */
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.8; }
+}
+

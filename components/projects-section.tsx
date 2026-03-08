@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useCallback } from "react"
+import { createPortal } from "react-dom"
 import { ExternalLink, Github, X, ChevronRight, Star, GitFork } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -67,6 +68,22 @@ const PROJECTS: Project[] = [
 export function ProjectsSection() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
 
+  // Close modal on Escape key
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.key === "Escape") setSelectedProject(null)
+  }, [])
+
+  useEffect(() => {
+    if (selectedProject) {
+      document.addEventListener("keydown", handleKeyDown)
+      document.body.style.overflow = "hidden"
+    }
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown)
+      document.body.style.overflow = ""
+    }
+  }, [selectedProject, handleKeyDown])
+
   return (
     <section id="projects" className="py-16 sm:py-20 px-4 sm:px-6">
       <div className="max-w-5xl mx-auto">
@@ -81,8 +98,11 @@ export function ProjectsSection() {
           {PROJECTS.map((project) => (
             <div
               key={project.id}
+              role="button"
+              tabIndex={0}
               onClick={() => setSelectedProject(project)}
-              className="group cursor-pointer bg-card rounded-lg border border-border p-5 sm:p-6 transition-all duration-200 hover:border-accent hover:shadow-lg hover:-translate-y-1"
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSelectedProject(project) } }}
+              className="group cursor-pointer bg-card rounded-lg border border-border p-5 sm:p-6 transition-all duration-200 hover:border-accent hover:shadow-lg hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background shimmer-hover"
             >
               <div className="flex items-start justify-between mb-3 sm:mb-4">
                 <div className="flex items-center gap-2 min-w-0">
@@ -139,8 +159,8 @@ export function ProjectsSection() {
           ))}
         </div>
 
-        {/* Project Modal */}
-        {selectedProject && (
+        {/* Project Modal — rendered via portal to avoid transform-breaking-fixed-position bug */}
+        {selectedProject && createPortal(
           <div
             className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm"
             onClick={() => setSelectedProject(null)}
@@ -227,7 +247,8 @@ export function ProjectsSection() {
                 </div>
               </div>
             </div>
-          </div>
+          </div>,
+          document.body
         )}
       </div>
     </section>

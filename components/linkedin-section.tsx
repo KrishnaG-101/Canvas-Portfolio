@@ -124,7 +124,7 @@ export function LinkedInSection() {
           {allPosts.map((post, index) => (
             <div
               key={`${post.id}-${index}`}
-              className="w-[280px] sm:w-[350px] flex-shrink-0 bg-card border border-border rounded-lg p-4 sm:p-6 transition-all duration-200 hover:border-accent hover:shadow-lg"
+              className="w-[280px] sm:w-[350px] flex-shrink-0 bg-card border border-border rounded-lg p-4 sm:p-6 transition-all duration-200 hover:border-accent hover:shadow-lg shimmer-hover"
             >
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#0A66C2] flex items-center justify-center text-white font-semibold text-xs sm:text-sm">

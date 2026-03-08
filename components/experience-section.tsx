@@ -94,7 +94,7 @@ export function ExperienceSection() {
                 {/* Timeline dot */}
                 <div className="absolute left-2.5 sm:left-3.5 top-1.5 w-3 h-3 rounded-full bg-accent border-2 border-background shadow-sm" />
 
-                <div className="bg-card border border-border rounded-lg p-5 sm:p-6 transition-all duration-200 hover:border-accent/50 hover:shadow-md">
+                <div className="bg-card border border-border rounded-lg p-5 sm:p-6 transition-all duration-200 hover:border-accent/50 hover:shadow-md hover:border-l-accent hover:border-l-2">
                   <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-4 mb-3">
                     <div>
                       <h3 className="text-base sm:text-lg font-semibold">{exp.role}</h3>
